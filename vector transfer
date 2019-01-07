@@ -1,0 +1,91 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/glm.hpp"	// glm 기본 함수
+#include "glm/ext.hpp"	// glm 확장 함수
+#include <math.h>	
+#include <iostream>	
+#include <string>	
+
+using namespace glm;
+
+int main(int argc, char** argv)
+{
+	std::cout << "1번" << std::endl;
+	//𝑘a 𝐼𝑎 + 𝑘𝑑 𝐼𝑙 (𝑁햇 ∙ 𝐿햇) + 𝑘𝑠 𝐼𝑙 (𝑅햇 ∙ 𝑉햇)
+	//𝑘𝑎 = 0.2, 𝑘𝑑 = 0.8, 𝑘𝑠 = 0.5
+	//𝐼𝑎 = 0.5, 0.1, 0.1
+	//𝐼𝑙 = 0.9, 0.2, 0.2
+	//𝑁 = 0.1, 0.99, 0.1
+	//𝐿 = 100, 100, 100
+	//𝑅 = −100, 100, −100
+	//𝑉 = 0, 10, −100
+	//𝑛 = 20
+
+	//연산에 사용할 변수선언과 초기화
+	float ka = 0.2f, kd = 0.8f, ks = 0.5f;
+	glm::vec3 Ia(0.5f, 0.1f, 0.1f);
+	glm::vec3 Il(0.9f, 0.2f, 0.2f);
+	glm::vec3 N(0.1f, 0.99f, 0.1f);
+	glm::vec3 L(100.f, 100.f, 100.f);
+	glm::vec3 R(-100.f, 100.f, -100.f);
+	glm::vec3 V(0.f, 10.f, -100.f);
+	float n = 20.f;
+
+	//연산하기 위해 단위벡터 계산
+	glm::vec3 unitN = glm::normalize(N);
+	glm::vec3 unitL = glm::normalize(L);
+	glm::vec3 unitR = glm::normalize(R);
+	glm::vec3 unitV = glm::normalize(V);
+
+	float dotNL = glm::dot(unitN, unitL);
+	float dotRV = glm::dot(unitR, unitV);
+
+	glm::vec3 result = ka * Ia + kd * dotNL *Il + ks * pow(dotRV, n)*Il;
+
+	std::cout << "계산 결과 : " << glm::to_string(result) << std::endl;
+
+	std::cout << "2번"; 
+
+					   //2. Rotate by 45°
+					   //	about z - axis
+					   //	2. Scale by 2 in the y - axis
+					   //	3. Translate by - 5 in the x - axis
+
+					   //	• 𝐩𝟎 = (𝟎, 𝟎, 𝟎)
+					   //	• 𝐩𝟏 = (𝟐, 𝟎, 𝟎)
+					   //	• 𝐩𝟐 = (𝟐, 𝟐, 𝟎)
+					   //	• 𝐩𝟑 = (𝟏, 𝟑, 𝟎)
+					   //	• 𝐩𝟒 = (𝟎, 𝟐, 𝟎)
+
+	glm::vec4 p0(0.f, 0.f, 0.f, 1.f); //3차원벡터지만 모든 변환행렬을 하나의 행렬곱으로 나타내주기 위하여 하나의 값을 추가, 4차원으로 사용
+	glm::vec4 p1(2.f, 0.f, 0.f, 1.f);
+	glm::vec4 p2(2.f, 2.f, 0.f, 1.f);
+	glm::vec4 p3(1.f, 3.f, 0.f, 1.f);
+	glm::vec4 p4(0.f, 2.f, 0.f, 1.f);
+
+	glm::mat4 A = glm::rotate(glm::radians(45.f), glm::vec3(0.f, 0.f, 1.f)); //z-axis이므로 (0,0,1)
+	glm::mat4 B = glm::scale(glm::vec3(1.f, 2.f, 1.f)); //y축으로 2만큼이므로 (1,2,1)
+	glm::mat4 C = glm::translate(glm::vec3(-5.f, 0.f, 0.f)); //x축으로 -5만큼 이므로 (-5,0,0)
+
+	glm::mat4 T = C * B * A;  //rotate->scale->translate이므로 행렬곱 순으로 나열하여 변환행렬 정의
+
+	//transform
+
+	glm::vec4 t_p0 = T * p0;
+	glm::vec4 t_p1 = T * p1;
+	glm::vec4 t_p2 = T * p2;
+	glm::vec4 t_p3 = T * p3;
+	glm::vec4 t_p4 = T * p4;
+
+	std::cout << "p0 : " << glm::to_string(t_p0) << std::endl;
+	std::cout << "p1 : " << glm::to_string(t_p1) << std::endl;
+	std::cout << "p2 : " << glm::to_string(t_p2) << std::endl;
+	std::cout << "p3 : " << glm::to_string(t_p3) << std::endl;
+	std::cout << "p4 : " << glm::to_string(t_p4) << std::endl;
+
+
+	return 0;
+}
+
+
+
+
